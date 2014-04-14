@@ -5,6 +5,7 @@ Given a dir of mail merged pdf files, rename using course/instructor/term
 """
 import os
 from PyPDF2 import PdfFileReader
+import sys
 
 CONFIG = [ '/Users/jmuniz/Dropbox/Documents/SPS/F13/Online/PDF/', ]
 

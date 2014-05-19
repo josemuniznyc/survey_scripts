@@ -48,5 +48,6 @@ for i in FILES:
         file_toread = CONFIG[0] + i
         convert(file_toread)
 
-print RESPONSE_DATA
+# print RESPONSE_DATA
+
 create_csv(RESPONSE_DATA)

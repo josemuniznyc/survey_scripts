@@ -4,7 +4,7 @@
 import pandas as pd
 import os
 
-EXCEL_DIRECTORY = "/Users/jmuniz/Dropbox/Transfer/s14-f2f-excel"
+EXCEL_DIRECTORY = "/Users/jmuniz/Dropbox/SPS/S14/F2F/jsm/"
 ROSTER = "/Users/jmuniz/Desktop/Roster_to_m14.xlsx"
 
 def get_term(term_semester, term_year):
@@ -46,7 +46,8 @@ def rename_scans(list_of_names):
     new_name = os.path.join(EXCEL_DIRECTORY, list_of_names[1])
     os.rename(old_file, new_name)
 
-excel_names = [x for x in os.listdir(EXCEL_DIRECTORY) if x[-5:] == ".xlsx"]
+excel_names = [x for x in os.listdir(EXCEL_DIRECTORY) if \
+    (x[-5:] == ".xlsx" and "-" not in x)] #Only pick up unamed excel files
 course_roster = pd.read_excel(ROSTER, index_col=0)
 name_bridge = [get_new_name(x) for x in excel_names]
 cleaned_names = [clean_names(x) for x in name_bridge]

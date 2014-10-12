@@ -4,8 +4,8 @@
 import pandas as pd
 import os
 
-EXCEL_DIRECTORY = "/Users/jmuniz/Dropbox/SPS/S14/F2F/jsm/"
-ROSTER = "/Users/jmuniz/Desktop/Roster_to_m14.xlsx"
+EXCEL_DIRECTORY = "/Users/jmuniz/Dropbox/Transfer/jsm_reports"
+ROSTER = "/Users/jmuniz/Dropbox/SPS/data/course_roster.xlsx"
 
 def get_term(term_semester, term_year):
     term_year = str(term_year)[-2:]

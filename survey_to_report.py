@@ -145,7 +145,7 @@ def write_header():
         'C_sat_aa', 'C_sat_a', 'C_sat_ba', 'C_sat_na', 'C_sat_ra', 'R_1',
         'R_2', 'R_3', 'R_4', 'R_5', 'R_count', 'Seats', 'R_rate', 'Dep_code',
         'C_title',
-        ] #OUCH: Should refactor this. 
+        ] #OUCH: Should do something with this. 
     fake_rows = [header_row,] #We need this in order to use write_rows
     write_rows(fake_rows)
     return

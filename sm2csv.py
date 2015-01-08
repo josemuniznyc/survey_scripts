@@ -9,11 +9,14 @@ Convert a directory of SM excel files into a CSV of student course evals
 import os
 import xlrd
 import csv
+import pandas as pd
 from future.builtins import round
 
-CONFIG = {"data_dir":"/Users/jmuniz/Dropbox/SPS/data", 
-        "excel":"/Users/jmuniz/Dropbox/SPS/m14/online/raw_data",
-        "output":"/Users/jmuniz/Dropbox/SPS/m14/online_evals.csv"}
+CONFIG = { "excel" : "/Users/jmuniz/Dropbox/SPS/m14/online/raw_data",
+        "output" : "/Users/jmuniz/Dropbox/SPS/m14/online_evals.csv",
+        "roster" : "/Users/jmuniz/Dropbox/SPS/data/course_roster.xlsx"}
+
+ROSTER = pd.read_excel(CONFIG["roster"], index_col=0)
 
 def collect_data(excel_file):
     
@@ -60,18 +63,53 @@ def collect_data(excel_file):
         satisfaction_ratings["q17"] = worksheet.row_values(43, start_col, end_col)
 
     def get_open_comments():
-        pass
-    
+
+        comments_col = worksheet.col_values(2)
+        comments_indicies = [i for i, x in enumerate(comments_col) \
+            if x == u'Response Count'] #Find all start points for comments
+
+        def extract_comment(comment_num):
+            
+            position = comment_num - 1
+            count_cell = comments_indicies[position] + 1
+            num_responses = int(comments_col[count_cell])
+
+            if num_responses == 0:
+                comment = "No responses to this question."
+            else:
+                start_cell = count_cell + 5
+                end_cell = start_cell + num_responses
+                comments = comments_col[start_cell : end_cell]
+                comments = [x.encode('utf-8') for x in comments]
+                collected_strings = []
+                for i, x in enumerate(comments, start=1):
+                    string = "{}: {}".format(i, x)
+                    collected_strings.append(string)
+                    comment = "/n".join(collected_strings)
+
+            return comment
+
+        survey_values["comment_1"] = extract_comment(1)
+        survey_values["comment_2"] = extract_comment(2)
+        survey_values["comment_3"] = extract_comment(3)
+        survey_values["comment_4"] = extract_comment(4)
+        survey_values["comment_5"] = extract_comment(5)
+
     def get_course_data():
         survey_title = worksheet.row_values(0, 0, 1)
         survey_title = survey_title[0].split() #ST is in a list, have to break
-        survey_values["Term"] = survey_title[0]
-        survey_values["Year"] = survey_title[1]
-        survey_values["Course"] = "{} {}".format(survey_title[2], 
+        survey_values["term"] = survey_title[0]
+        survey_values["year"] = survey_title[1]
+        survey_values["course"] = "{} {}".format(survey_title[2], 
             survey_title[3]) #Get Ins. name from external source. Too fragile.
         response_col = worksheet.col_values(9)
         response_nums = [x for x in response_col if isinstance(x, float)]
-        survey_values["Response count"] = int(max(response_nums))
+        survey_values["response_count"] = int(max(response_nums))
+        
+        # course = ROSTER[(ROSTER["course"] == survey_values["course"]) & 
+        #     (ROSTER["term_year"] == int(survey_values["year"])) & 
+        #     (ROSTER["term_semester"] == survey_values["term"])]
+        # survey_values["course_id"] = int(course.index)
 
     def break_list_values(key, value, q_type):
         if q_type == "lickert":
@@ -95,9 +133,9 @@ def collect_data(excel_file):
     #Release the funcs!
 
     get_lickert_scores()
-    get_open_comments()
     get_satisfaction_ratings()
     get_course_data()
+    get_open_comments()
 
     for question, value_lst in lickert_scores.iteritems():
         break_list_values(question, value_lst, "lickert")

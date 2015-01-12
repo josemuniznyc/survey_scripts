@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -- coding: utf-8 --
+
 """
 sm2csv.py
 
@@ -9,14 +9,11 @@ Convert a directory of SM excel files into a CSV of student course evals
 import os
 import xlrd
 import csv
-import pandas as pd
-from future.builtins import round
+import collections
 
-CONFIG = { "excel" : "/Users/jmuniz/Dropbox/SPS/m14/online/raw_data",
-        "output" : "/Users/jmuniz/Dropbox/SPS/m14/online_evals.csv",
+CONFIG = { "excel" : "/Users/jmuniz/Dropbox/SPS/f14/online/raw_data",
+        "output" : "/Users/jmuniz/Dropbox/SPS/f14/online_evals.csv",
         "roster" : "/Users/jmuniz/Dropbox/SPS/data/course_roster.xlsx"}
-
-ROSTER = pd.read_excel(CONFIG["roster"], index_col=0)
 
 def collect_data(excel_file):
     
@@ -24,9 +21,9 @@ def collect_data(excel_file):
     worksheet = workbook.sheet_by_name('Questions')
 
     #create dicts to hold values
-    survey_values = {}
-    lickert_scores = {}
-    satisfaction_ratings = {}
+    survey_values = collections.OrderedDict()
+    lickert_scores = collections.OrderedDict()
+    satisfaction_ratings = collections.OrderedDict()
 
     def get_lickert_scores():
         
@@ -73,14 +70,15 @@ def collect_data(excel_file):
             position = comment_num - 1
             count_cell = comments_indicies[position] + 1
             num_responses = int(comments_col[count_cell])
-
+            comment = "No responses to this question."
+            
             if num_responses == 0:
                 comment = "No responses to this question."
             else:
                 start_cell = count_cell + 5
                 end_cell = start_cell + num_responses
                 comments = comments_col[start_cell : end_cell]
-                comments = [x.encode('utf-8') for x in comments]
+                comments = [x for x in comments]
                 collected_strings = []
                 for i, x in enumerate(comments, start=1):
                     string = "{}: {}".format(i, x)

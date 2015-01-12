@@ -71,7 +71,7 @@ def collect_data(excel_file):
             count_cell = comments_indicies[position] + 1
             num_responses = int(comments_col[count_cell])
             comment = "No responses to this question."
-            
+
             if num_responses == 0:
                 comment = "No responses to this question."
             else:
@@ -83,7 +83,7 @@ def collect_data(excel_file):
                 for i, x in enumerate(comments, start=1):
                     string = "{}: {}".format(i, x)
                     collected_strings.append(string)
-                    comment = "/n".join(collected_strings)
+                    comment = "\n".join(collected_strings)
 
             return comment
 

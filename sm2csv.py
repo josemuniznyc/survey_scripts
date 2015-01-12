@@ -137,10 +137,10 @@ def collect_data(excel_file):
     get_course_data()
     get_open_comments()
 
-    for question, value_lst in lickert_scores.iteritems():
+    for question, value_lst in lickert_scores.items():
         break_list_values(question, value_lst, "lickert")
 
-    for question, value_lst in satisfaction_ratings.iteritems():
+    for question, value_lst in satisfaction_ratings.items():
         break_list_values(question, value_lst, "satisfaction")        
 
     return survey_values

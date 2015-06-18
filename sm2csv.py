@@ -8,7 +8,6 @@ Convert a directory of SM excel files into a CSV of student course evals
 import os
 import xlrd
 import csv
-from future.builtins import round
 from collections import OrderedDict
 
 CONFIG = {}
@@ -22,6 +21,7 @@ def collect_data(excel_file):
     """
     Establish connection to excel file, then parse quantitative data.
     """
+    print('Opening {file} for processing'.format(file=excel_file))
     wk = xlrd.open_workbook(os.path.join(CONFIG["excel_dir"], excel_file))
     ws = wk.sheet_by_index(0)
 
@@ -92,7 +92,7 @@ def collect_data(excel_file):
             * then format the reponses before returning to dictionary
             """
             open_comment_response = data[
-                location[1] + 6: location[1] + 6 + location[0]
+                location[1]: location[1] + location[0]
             ]
             temp_holder = []
             for count, statement in enumerate(open_comment_response, 1):
@@ -149,14 +149,15 @@ def collect_data(excel_file):
     for question, value_lst in satisfaction_ratings.items():
         break_list_values(question, value_lst, "satisfaction")
 
+    print('Completed processing of {file}'.format(file=excel_file))
     return survey_values
 
 
 def write_csv(list_of_dicts):
     fieldnames = list(list_of_dicts[0].keys())
-    f = open(CONFIG["output"], 'wt')
+    f = open(CONFIG['output_file'], 'wt')
     try:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, lineterminator='\n', fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(list_of_dicts)
     finally:
@@ -169,4 +170,4 @@ os.chdir(os.path.join(os.path.expanduser('~'), CONFIG['working_dir']))
 collected_data = [
     collect_data(x) for x in os.listdir(CONFIG["excel_dir"])]
 write_csv(collected_data)
-print("Files processed; data avaliable at {}".format(CONFIG["output"]))
+print("Files processed; data avaliable at {}".format(CONFIG['output_file']))
